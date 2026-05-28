@@ -2,27 +2,65 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waste Analysis Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
+        <h1 class="text-2xl font-bold mb-4">Waste Analysis Dashboard</h1>
+        <div id="dashboard-content" class="overflow-x-auto">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border p-2">กลุ่ม (A)</th>
+                        <th class="border p-2">ปัญหา (C)</th>
+                        <th class="border p-2">BHS</th>
+                        <th class="border p-2">CENTER</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="4" class="text-center p-4">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
-        // ใช้ URL ใหม่ที่คุณให้มา
         const sheetCSVUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4-ipAaFTNUcPGr2SyPJD4uxrnVZhYBuvrSl__M7x_qe24hKv4WCxnmL_EpttrvIi30AuJmLpwmOMp/pub?gid=958121043&single=true&output=csv';
 
         async function fetchSheetData() {
             try {
                 const response = await fetch(sheetCSVUrl);
-                const data = await response.text();
-                console.log("ข้อมูลที่โหลดได้:", data);
-                // เพิ่ม Logic การประมวลผลข้อมูลที่นี่
+                const csvText = await response.text();
+                const rows = csvText.split('\n').slice(1); // ข้ามแถวหัวตาราง
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = ''; // ล้างสถานะกำลังโหลด
+
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    if (cols.length < 5) return;
+                    
+                    // สมมติโครงสร้าง: A=0, C=2, Machine=3, Weight=4
+                    const group = cols[0];
+                    const issue = cols[2];
+                    const machine = cols[3].trim();
+                    const weight = cols[4];
+
+                    // สร้างแถวข้อมูล (ตัวอย่างการกรองเพื่อแสดง)
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="border p-2">${group}</td>
+                        <td class="border p-2">${issue}</td>
+                        <td class="border p-2">${machine === 'BHS' ? weight : '0.00'}</td>
+                        <td class="border p-2">${machine === 'CENTER' ? weight : '0.00'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             } catch (e) {
-                console.error("โหลดข้อมูลไม่สำเร็จ:", e);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="4" class="text-center p-4 text-red-500">โหลดข้อมูลไม่สำเร็จ</td></tr>';
             }
         }
-        window.onload = fetchSheetData;
+        fetchSheetData();
     </script>
-</head>
-<body class="bg-gray-100 p-5">
-    <h1 class="text-2xl font-bold">Waste Dashboard กำลังโหลด...</h1>
 </body>
 </html>
