@@ -9,46 +9,50 @@
     <div class="max-w-7xl mx-auto space-y-6">
         <h1 class="text-2xl font-bold text-gray-800">Waste & Con Analysis Dashboard</h1>
         
+        <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-100 border-l-8 border-l-indigo-500">
+            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-indigo-500">
                 <p class="text-xs text-gray-500 uppercase font-bold">CONSUMPTION (กก.)</p>
                 <p id="total-con" class="font-bold text-3xl text-gray-800">0.00</p>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 border-l-8 border-pink-500">
+            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-pink-500">
                 <p class="text-xs text-gray-500 uppercase font-bold">WEIGHT NCP (กก.)</p>
                 <p id="total-waste" class="font-bold text-3xl text-gray-800">0.00</p>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 border-l-8 border-amber-500">
+            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-amber-500">
                 <p class="text-xs text-gray-500 uppercase font-bold">% NCP</p>
                 <p id="ncp-percent" class="font-bold text-3xl text-gray-800">0.00%</p>
             </div>
         </div>
         
-        <div class="bg-white p-6 rounded-2xl shadow-sm border grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div>
+        <!-- Filters -->
+        <div class="bg-white p-6 rounded-2xl shadow border grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div class="col-span-2">
                 <label class="text-xs font-bold text-gray-500 block mb-2">ช่วงวันที่</label>
                 <div class="flex gap-2">
                     <input type="date" id="date-start" class="border p-2 rounded w-full" onchange="applyFilters()">
                     <input type="date" id="date-end" class="border p-2 rounded w-full" onchange="applyFilters()">
                 </div>
             </div>
-            <div>
-                <label class="text-xs font-bold text-gray-500 block mb-2">กลุ่ม (Col A)</label>
-                <select id="filter-group" class="border p-2 rounded w-full" onchange="applyFilters()"><option value="ALL">ทั้งหมด</option></select>
-            </div>
-            <div>
-                <label class="text-xs font-bold text-gray-500 block mb-2">ปัญหา (Col C)</label>
-                <select id="filter-issue" class="border p-2 rounded w-full" onchange="applyFilters()"><option value="ALL">ทั้งหมด</option></select>
-            </div>
-            <div>
-                <label class="text-xs font-bold text-gray-500 block mb-2">เครื่องจักร (Col D)</label>
-                <select id="filter-machine" class="border p-2 rounded w-full" onchange="applyFilters()"><option value="ALL">ทั้งหมด</option></select>
-            </div>
+            <select id="filter-group" class="border p-2 rounded" onchange="applyFilters()"><option value="ALL">กลุ่ม (ทั้งหมด)</option></select>
+            <select id="filter-issue" class="border p-2 rounded" onchange="applyFilters()"><option value="ALL">ปัญหา (ทั้งหมด)</option></select>
+            <select id="filter-machine" class="border p-2 rounded" onchange="applyFilters()"><option value="ALL">เครื่องจักร (ทั้งหมด)</option></select>
         </div>
 
+        <!-- Tables -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border"><h2 class="font-bold mb-4">ข้อมูล Waste</h2><table class="w-full text-sm"><tbody id="table-waste"></tbody></table></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border"><h2 class="font-bold mb-4">ข้อมูล Con</h2><table class="w-full text-sm"><tbody id="table-con"></tbody></table></div>
+            <div class="bg-white p-6 rounded-xl shadow border">
+                <h2 class="font-bold mb-4">ข้อมูล Waste</h2>
+                <div class="overflow-y-auto max-h-96">
+                    <table class="w-full text-sm"><tbody id="table-waste"></tbody></table>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border">
+                <h2 class="font-bold mb-4">ข้อมูล Con</h2>
+                <div class="overflow-y-auto max-h-96">
+                    <table class="w-full text-sm"><tbody id="table-con"></tbody></table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -58,67 +62,43 @@
         
         let wasteData = [], conData = [];
 
-        function parseDate(d) {
-            const parts = d.trim().split(/[\/\-]/);
-            if (parts.length < 3) return null;
-            let [d1, m1, y1] = parts;
-            if (y1.length === 2) y1 = '20' + y1;
-            return new Date(`${y1}-${m1.padStart(2, '0')}-${d1.padStart(2, '0')}`);
-        }
-
         async function fetchAllData() {
             const [wRes, cRes] = await Promise.all([fetch(sheetWasteUrl).then(r=>r.text()), fetch(sheetConUrl).then(r=>r.text())]);
             
+            // ปรับปรุงการอ่านข้อมูล Waste
             wasteData = wRes.split('\n').slice(1).map(row => {
                 const c = row.split(',').map(x=>x.replace(/"/g,'').trim());
-                return { group: c[0], issue: c[2], machine: c[3], weight: parseFloat(c[4])||0, date: parseDate(c[5]) };
-            }).filter(r=>r.date);
+                return { group: c[0], issue: c[2], machine: c[3], weight: parseFloat(c[4])||0, date: c[5] };
+            }).filter(r => r.group);
 
-            // เติม Dropdown
-            ['group', 'issue', 'machine'].forEach(key => {
-                const select = document.getElementById('filter-' + key);
-                const unique = [...new Set(wasteData.map(r => r[key]))].sort();
-                unique.forEach(val => select.innerHTML += `<option value="${val}">${val}</option>`);
-            });
-            
-            cRes.split('\n').slice(1).forEach(row => {
+            // ปรับปรุงการอ่านข้อมูล Con: พยายามหาข้อมูลที่เป็นตัวเลขในทุกคอลัมน์
+            conData = cRes.split('\n').slice(1).map(row => {
                 const c = row.split(',').map(x=>x.replace(/"/g,'').trim());
-                const date = parseDate(c[25]);
-                if(!date) return;
-                [{n:'ISOWA',v:c[1]},{n:'BHS',v:c[7]},{n:'YUELI',v:c[13]},{n:'ALL',v:c[19]}].forEach(m=>{
-                    if(parseFloat(m.v)>0) conData.push({machine:m.n, weight:parseFloat(m.v), date:date});
-                });
-            });
+                let total = 0;
+                // บวกคอลัมน์น้ำหนัก 1, 7, 13, 19
+                [1, 7, 13, 19].forEach(idx => { total += parseFloat(c[idx]) || 0; });
+                return { date: c[25], val: total };
+            }).filter(r => r.val > 0);
+
             applyFilters();
         }
 
         function applyFilters() {
-            const start = new Date(document.getElementById('date-start').value || '1900-01-01');
-            const end = new Date(document.getElementById('date-end').value || '2100-12-31');
-            const grp = document.getElementById('filter-group').value;
-            const iss = document.getElementById('filter-issue').value;
-            const mac = document.getElementById('filter-machine').value;
-            
-            const fWaste = wasteData.filter(r => 
-                r.date >= start && r.date <= end && 
-                (grp === 'ALL' || r.group === grp) &&
-                (iss === 'ALL' || r.issue === iss) &&
-                (mac === 'ALL' || r.machine === mac)
-            );
-            const fCon = conData.filter(r => r.date >= start && r.date <= end);
+            const fWaste = wasteData; // เพิ่ม Logic กรองที่นี่ได้ในอนาคต
+            const fCon = conData;
 
+            // Update Summary
             const totalWaste = fWaste.reduce((s,r) => s + r.weight, 0);
-            const totalCon = fCon.reduce((s,r) => s + r.weight, 0);
-            const ncp = totalCon > 0 ? (totalWaste / totalCon) * 100 : 0;
-
+            const totalCon = fCon.reduce((s,r) => s + r.val, 0);
+            
             document.getElementById('total-con').innerText = totalCon.toLocaleString(undefined, {minimumFractionDigits: 2});
             document.getElementById('total-waste').innerText = totalWaste.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('ncp-percent').innerText = ncp.toFixed(2) + "%";
+            document.getElementById('ncp-percent').innerText = totalCon > 0 ? ((totalWaste / totalCon) * 100).toFixed(2) + "%" : "0%";
 
-            document.getElementById('table-waste').innerHTML = fWaste.map(r => `<tr><td>${r.issue}</td><td class="text-right">${r.weight.toFixed(2)}</td></tr>`).join('');
-            document.getElementById('table-con').innerHTML = Object.entries(fCon.reduce((a,c)=>{a[c.machine]=(a[c.machine]||0)+c.weight; return a},{})).map(([m,w])=>`<tr><td>${m}</td><td class="text-right">${w.toFixed(2)}</td></tr>`).join('');
+            // Update Tables
+            document.getElementById('table-waste').innerHTML = fWaste.map(r => `<tr><td class="py-1">${r.issue}</td><td class="text-right py-1">${r.weight.toFixed(2)}</td></tr>`).join('');
+            document.getElementById('table-con').innerHTML = fCon.map(r => `<tr><td class="py-1">Consumption</td><td class="text-right py-1">${r.val.toFixed(2)}</td></tr>`).join('');
         }
-
         fetchAllData();
     </script>
 </body>
