@@ -11,63 +11,63 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8">
-    <div class="max-w-6xl mx-auto space-y-8">
+<body class="bg-slate-50 p-6 md:p-10">
+    <div class="max-w-6xl mx-auto space-y-10">
         <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Waste & Consumption</h1>
-                <p class="text-slate-500">รายงานประสิทธิภาพและการสูญเสียการผลิต</p>
+                <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Waste & Consumption</h1>
+                <p class="text-lg text-slate-500">รายงานประสิทธิภาพและการสูญเสียการผลิต</p>
             </div>
-            <button onclick="resetFilters()" class="bg-white border border-slate-200 hover:bg-slate-50 px-5 py-2 rounded-lg text-sm font-semibold transition shadow-sm">ล้างตัวกรอง</button>
+            <button onclick="resetFilters()" class="bg-white border border-slate-200 hover:bg-slate-50 px-6 py-3 rounded-xl text-base font-semibold transition shadow-sm">ล้างตัวกรอง</button>
         </header>
         
-        <section class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-wrap gap-6 items-end">
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-wrap gap-6 items-end">
             <div class="flex gap-4">
                 <div>
-                    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">จากวันที่</label>
-                    <input type="date" id="date-start" class="bg-slate-50 border-none p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
+                    <label class="block text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">จากวันที่</label>
+                    <input type="date" id="date-start" class="bg-slate-50 border-none p-4 rounded-xl w-full text-lg focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
                 </div>
                 <div>
-                    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">ถึงวันที่</label>
-                    <input type="date" id="date-end" class="bg-slate-50 border-none p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
+                    <label class="block text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">ถึงวันที่</label>
+                    <input type="date" id="date-end" class="bg-slate-50 border-none p-4 rounded-xl w-full text-lg focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
                 </div>
             </div>
             <div class="flex-grow grid grid-cols-2 md:grid-cols-4 gap-4">
-                <select id="group-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">Department</option></select>
-                <select id="col-c-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">Description</option></select>
-                <select id="machine-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">เครื่องจักร (W)</option></select>
-                <select id="cons-machine-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">เครื่องจักร (C)</option></select>
+                <select id="group-filter" class="bg-slate-50 border-none p-4 rounded-xl text-base" onchange="updateDashboard()"><option value="all">Department</option></select>
+                <select id="col-c-filter" class="bg-slate-50 border-none p-4 rounded-xl text-base" onchange="updateDashboard()"><option value="all">Description</option></select>
+                <select id="machine-filter" class="bg-slate-50 border-none p-4 rounded-xl text-base" onchange="updateDashboard()"><option value="all">เครื่องจักร (W)</option></select>
+                <select id="cons-machine-filter" class="bg-slate-50 border-none p-4 rounded-xl text-base" onchange="updateDashboard()"><option value="all">เครื่องจักร (C)</option></select>
             </div>
         </section>
         
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Total Waste</p>
-                <p id="total-weight" class="font-bold text-4xl text-slate-900">0.00</p>
-                <p class="text-sm text-slate-400 mt-1">กิโลกรัม</p>
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-sm text-slate-400 uppercase font-bold tracking-widest mb-2">Total Waste</p>
+                <p id="total-weight" class="font-bold text-5xl text-slate-900">0.00</p>
+                <p class="text-base text-slate-400 mt-2">กิโลกรัม</p>
             </div>
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Total Cons</p>
-                <p id="total-con" class="font-bold text-4xl text-slate-900">0.00</p>
-                <p class="text-sm text-slate-400 mt-1">กิโลกรัม</p>
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-sm text-slate-400 uppercase font-bold tracking-widest mb-2">Total Cons</p>
+                <p id="total-con" class="font-bold text-5xl text-slate-900">0.00</p>
+                <p class="text-base text-slate-400 mt-2">กิโลกรัม</p>
             </div>
-            <div class="bg-blue-600 p-8 rounded-3xl shadow-lg shadow-blue-200">
-                <p id="waste-percent-label" class="text-xs text-blue-100 uppercase font-bold tracking-widest mb-1">Waste %</p>
-                <p id="waste-percent" class="font-bold text-4xl text-white">0.00%</p>
-                <p id="target-display" class="text-xs text-blue-200 font-medium mt-2"></p>
+            <div class="bg-blue-600 p-10 rounded-3xl shadow-lg shadow-blue-200">
+                <p id="waste-percent-label" class="text-sm text-blue-100 uppercase font-bold tracking-widest mb-2">Waste %</p>
+                <p id="waste-percent" class="font-bold text-5xl text-white">0.00%</p>
+                <p id="target-display" class="text-base text-blue-200 font-medium mt-3"></p>
             </div>
         </section>
 
-        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-8">
-                <h2 id="chart-title" class="font-bold text-xl text-slate-900">แนวโน้มการผลิต</h2>
-                <div class="flex bg-slate-100 p-1.5 rounded-2xl" id="time-toggle">
-                    <button onclick="setTimeGroup('day')" id="btn-day" class="px-5 py-2 text-xs font-bold rounded-xl transition-all">Daily</button>
-                    <button onclick="setTimeGroup('week')" id="btn-week" class="px-5 py-2 text-xs font-bold rounded-xl bg-white text-blue-600 shadow-sm">Weekly</button>
-                    <button onclick="setTimeGroup('month')" id="btn-month" class="px-5 py-2 text-xs font-bold rounded-xl transition-all">Monthly</button>
+        <section class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-10">
+                <h2 id="chart-title" class="font-bold text-2xl text-slate-900">แนวโน้มการผลิต</h2>
+                <div class="flex bg-slate-100 p-2 rounded-2xl" id="time-toggle">
+                    <button onclick="setTimeGroup('day')" id="btn-day" class="px-8 py-3 text-sm font-bold rounded-xl transition-all">Daily</button>
+                    <button onclick="setTimeGroup('week')" id="btn-week" class="px-8 py-3 text-sm font-bold rounded-xl bg-white text-blue-600 shadow-sm">Weekly</button>
+                    <button onclick="setTimeGroup('month')" id="btn-month" class="px-8 py-3 text-sm font-bold rounded-xl transition-all">Monthly</button>
                 </div>
             </div>
-            <canvas id="trendChart" height="80"></canvas>
+            <canvas id="trendChart" height="90"></canvas>
         </section>
     </div>
 
@@ -86,7 +86,7 @@
             currentTimeGroup = mode;
             ['day', 'week', 'month'].forEach(m => {
                 const btn = document.getElementById('btn-' + m);
-                btn.className = (m === mode) ? "px-5 py-2 text-xs font-bold rounded-xl bg-white text-blue-600 shadow-sm" : "px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900";
+                btn.className = (m === mode) ? "px-8 py-3 text-sm font-bold rounded-xl bg-white text-blue-600 shadow-sm" : "px-8 py-3 text-sm font-bold rounded-xl text-slate-500 hover:text-slate-900";
             });
             updateDashboard();
         }
@@ -175,10 +175,10 @@
                             align: 'top', 
                             formatter: (value, context) => context.dataset.label === 'Actual %' ? value + '%' : null,
                             color: '#1e293b',
-                            font: { weight: 'bold', size: 10 }
+                            font: { weight: 'bold', size: 14 }
                         } 
                     }, 
-                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } 
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 14 } } }, x: { grid: { display: false }, ticks: { font: { size: 14 } } } } 
                 }
             });
         }
