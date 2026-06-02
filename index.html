@@ -4,88 +4,95 @@
     <meta charset="UTF-8">
     <title>Waste & Consumption Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-50 p-5">
-    <div class="max-w-4xl mx-auto space-y-6">
-        <h1 class="text-2xl font-bold text-gray-800">Waste & Consumption Dashboard</h1>
+<body class="bg-slate-50 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto space-y-8">
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Waste & Consumption</h1>
+                <p class="text-slate-500">รายงานประสิทธิภาพและการสูญเสียการผลิต</p>
+            </div>
+            <button onclick="resetFilters()" class="bg-white border border-slate-200 hover:bg-slate-50 px-5 py-2 rounded-lg text-sm font-semibold transition shadow-sm">ล้างตัวกรอง</button>
+        </header>
         
-        <div class="bg-white p-6 rounded-2xl shadow border flex flex-wrap gap-4 items-center">
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">จากวันที่</label>
-                <input type="date" id="date-start" class="border p-2 rounded" onchange="updateDashboard()">
+        <section class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-wrap gap-6 items-end">
+            <div class="flex gap-4">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">จากวันที่</label>
+                    <input type="date" id="date-start" class="bg-slate-50 border-none p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">ถึงวันที่</label>
+                    <input type="date" id="date-end" class="bg-slate-50 border-none p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-500" onchange="updateDashboard()">
+                </div>
             </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">ถึงวันที่</label>
-                <input type="date" id="date-end" class="border p-2 rounded" onchange="updateDashboard()">
+            <div class="flex-grow grid grid-cols-2 md:grid-cols-4 gap-4">
+                <select id="group-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">Department</option></select>
+                <select id="col-c-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">Description</option></select>
+                <select id="machine-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">เครื่องจักร (W)</option></select>
+                <select id="cons-machine-filter" class="bg-slate-50 border-none p-3 rounded-xl text-sm" onchange="updateDashboard()"><option value="all">เครื่องจักร (C)</option></select>
             </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">กลุ่ม (คอลัมน์ A)</label>
-                <select id="group-filter" class="border p-2 rounded w-40" onchange="updateDashboard()">
-                    <option value="all">ทั้งหมด</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">คอลัมน์ C</label>
-                <select id="col-c-filter" class="border p-2 rounded w-40" onchange="updateDashboard()">
-                    <option value="all">ทั้งหมด</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">เครื่องจักร (Waste)</label>
-                <select id="machine-filter" class="border p-2 rounded w-40" onchange="updateDashboard()">
-                    <option value="all">ทั้งหมด</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">เครื่องจักร (Cons)</label>
-                <select id="cons-machine-filter" class="border p-2 rounded w-40" onchange="updateDashboard()">
-                    <option value="all">ทั้งหมด</option>
-                </select>
-            </div>
-            <button onclick="resetFilters()" class="mt-4 bg-gray-200 px-4 py-2 rounded text-sm hover:bg-gray-300">ล้างค่า</button>
-        </div>
+        </section>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-pink-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Total Waste Weight (กก.)</p>
-                <p id="total-weight" class="font-bold text-3xl text-gray-800">0.00</p>
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Total Waste</p>
+                <p id="total-weight" class="font-bold text-4xl text-slate-900">0.00</p>
+                <p class="text-sm text-slate-400 mt-1">กิโลกรัม</p>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-blue-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Total Consumption (กก.)</p>
-                <p id="total-con" class="font-bold text-3xl text-gray-800">0.00</p>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-1">Total Cons</p>
+                <p id="total-con" class="font-bold text-4xl text-slate-900">0.00</p>
+                <p class="text-sm text-slate-400 mt-1">กิโลกรัม</p>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow border-l-8 border-yellow-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Waste %</p>
-                <p id="waste-percent" class="font-bold text-3xl text-gray-800">0.00 %</p>
+            <div class="bg-blue-600 p-8 rounded-3xl shadow-lg shadow-blue-200">
+                <p id="waste-percent-label" class="text-xs text-blue-100 uppercase font-bold tracking-widest mb-1">Waste %</p>
+                <p id="waste-percent" class="font-bold text-4xl text-white">0.00%</p>
+                <p id="target-display" class="text-xs text-blue-200 font-medium mt-2"></p>
             </div>
-        </div>
+        </section>
 
-        <div class="bg-white p-6 rounded-xl shadow border">
-            <h2 class="font-bold mb-4">กราฟแนวโน้ม Waste % รายวัน</h2>
-            <canvas id="trendChart" height="100"></canvas>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow border">
-            <h2 class="font-bold mb-4">รายละเอียด Waste</h2>
-            <div class="max-h-96 overflow-y-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50 sticky top-0">
-                        <tr><th class="py-2 text-left">ปัญหา</th><th class="py-2 text-right">น้ำหนักรวม (กก.)</th></tr>
-                    </thead>
-                    <tbody id="table-waste"></tbody>
-                </table>
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-8">
+                <h2 id="chart-title" class="font-bold text-xl text-slate-900">แนวโน้มการผลิต</h2>
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl" id="time-toggle">
+                    <button onclick="setTimeGroup('day')" id="btn-day" class="px-5 py-2 text-xs font-bold rounded-xl transition-all">Daily</button>
+                    <button onclick="setTimeGroup('week')" id="btn-week" class="px-5 py-2 text-xs font-bold rounded-xl bg-white text-blue-600 shadow-sm">Weekly</button>
+                    <button onclick="setTimeGroup('month')" id="btn-month" class="px-5 py-2 text-xs font-bold rounded-xl transition-all">Monthly</button>
+                </div>
             </div>
-        </div>
+            <canvas id="trendChart" height="80"></canvas>
+        </section>
     </div>
 
     <script>
+        Chart.register(ChartDataLabels);
         const sheetWasteUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSujwDMZcl2kxH9Cph6tuv7L3mfOgCPvz9OJcTu1wcKtu6_RB9_gjpc8bxL_TTRXUo4RYz6m_oa732/pub?output=csv';
-        let wasteData = [], trendChart;
+        let wasteData = [], trendChart, currentTimeGroup = 'week';
+
+        const targets = {
+            "BHS": { "เศษติดแกน-ผลิต": 0.15, "รอยต่อออร์เดอร์": 0.20, "Web": 0.15, "Def": 1.10, "NCP": 2.00, "สันนูนตรงสเปค": 0.15, "งานเหลือโอเอ็ม": 0.05, "ของเหลือ": 1.01, "Conveyor": 0.03, "Reject QC": 0.09 },
+            "YUELI": { "เศษติดแกน-ผลิต": 0.15, "รอยต่อออร์เดอร์": 0.20, "Web": 0.15, "Def": 1.10, "NCP": 2.00, "สันนูนตรงสเปค": 0.15, "งานเหลือโอเอ็ม": 0.05, "ของเหลือ": 1.01, "Conveyor": 0.03, "Reject QC": 0.09 },
+            "ISOWA": { "เศษติดแกน-ผลิต": 0.15, "รอยต่อออร์เดอร์": 0.16, "Web": 0.17, "Def": 1.10, "NCP": 2.40, "สันนูนตรงสเปค": 0.15, "งานเหลือโอเอ็ม": 0.05, "ของเหลือ": 0.66, "Conveyor": 0.00, "Reject QC": 0.09 }
+        };
+
+        function setTimeGroup(mode) {
+            currentTimeGroup = mode;
+            ['day', 'week', 'month'].forEach(m => {
+                const btn = document.getElementById('btn-' + m);
+                btn.className = (m === mode) ? "px-5 py-2 text-xs font-bold rounded-xl bg-white text-blue-600 shadow-sm" : "px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900";
+            });
+            updateDashboard();
+        }
 
         function parseCleanFloat(val) { return parseFloat(val?.toString().replace(/,/g, '')) || 0; }
         function formatDate(dStr) {
-            if (!dStr) return "";
             const parts = dStr.trim().split(/[\/\-]/);
             if (parts.length === 3) {
                 let [d, m, y] = parts;
@@ -95,58 +102,85 @@
             return dStr.trim();
         }
 
+        function getWeekNumber(dateStr) {
+            const date = new Date(dateStr);
+            const sunday = new Date(date);
+            sunday.setDate(date.getDate() - date.getDay());
+            const year = sunday.getFullYear();
+            const startOfYear = new Date(year, 0, 1);
+            const pastDays = (sunday - startOfYear) / 86400000;
+            const weekNo = Math.ceil((pastDays + startOfYear.getDay() + 1) / 7);
+            return `${year}-W${weekNo.toString().padStart(2, '0')}`;
+        }
+
         async function fetchAllData() {
-            try {
-                const wRes = await fetch(sheetWasteUrl).then(r=>r.text());
-                const parseCSV = (row) => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
-                const wLines = wRes.split('\n').slice(1);
-                wasteData = wLines.filter(r => r.trim()).map(row => {
-                    const c = parseCSV(row);
-                    return { group: c[0], colC: c[2], issue: c[2], machine: c[3], weight: parseCleanFloat(c[4]), date: formatDate(c[5]), cons: parseCleanFloat(c[6]), consType: c[7], consMachine: c[8], consDate: formatDate(c[5]) };
-                });
-                
-                const getUnique = (key) => [...new Set(wasteData.map(r => r[key]).filter(Boolean))].sort();
-                document.getElementById('group-filter').innerHTML += getUnique('group').map(g => `<option value="${g}">${g}</option>`).join('');
-                document.getElementById('col-c-filter').innerHTML += getUnique('colC').map(v => `<option value="${v}">${v}</option>`).join('');
-                document.getElementById('machine-filter').innerHTML += getUnique('machine').map(m => `<option value="${m}">${m}</option>`).join('');
-                document.getElementById('cons-machine-filter').innerHTML += getUnique('consMachine').map(m => `<option value="${m}">${m}</option>`).join('');
-                updateDashboard();
-            } catch (e) { console.error("Error:", e); }
+            const wRes = await fetch(sheetWasteUrl).then(r=>r.text());
+            const rows = wRes.split('\n').slice(1);
+            wasteData = rows.filter(r => r.trim()).map(row => {
+                const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
+                return { group: c[0], colC: c[2], machine: c[3], weight: parseCleanFloat(c[4]), date: formatDate(c[5]), cons: parseCleanFloat(c[6]), consType: c[7], consMachine: c[8] };
+            });
+            const maps = { 'group-filter': 'group', 'col-c-filter': 'colC', 'machine-filter': 'machine', 'cons-machine-filter': 'consMachine' };
+            Object.keys(maps).forEach(id => {
+                const sel = document.getElementById(id);
+                [...new Set(wasteData.map(r => r[maps[id]]))].filter(Boolean).sort().forEach(v => sel.innerHTML += `<option value="${v}">${v}</option>`);
+            });
+            updateDashboard();
         }
 
         function updateDashboard() {
             const start = document.getElementById('date-start').value, end = document.getElementById('date-end').value;
-            const gFilter = document.getElementById('group-filter').value, cFilter = document.getElementById('col-c-filter').value;
             const mFilter = document.getElementById('machine-filter').value, cMFilter = document.getElementById('cons-machine-filter').value;
-
-            const fWaste = wasteData.filter(r => (!start || r.date >= start) && (!end || r.date <= end) && (gFilter === 'all' || r.group === gFilter) && (cFilter === 'all' || r.colC === cFilter) && (mFilter === 'all' || r.machine === mFilter));
+            const cFilter = document.getElementById('col-c-filter').value, gFilter = document.getElementById('group-filter').value;
             
-            const dailyData = {};
-            const issueTotals = {};
-            fWaste.forEach(r => {
-                issueTotals[r.issue] = (issueTotals[r.issue] || 0) + r.weight;
-                if(!dailyData[r.date]) dailyData[r.date] = { w: 0, c: 0 };
-                dailyData[r.date].w += r.weight;
-            });
+            const title = (cFilter !== 'all' ? cFilter : 'Waste %');
+            document.getElementById('waste-percent-label').innerText = title + ' %';
+            document.getElementById('chart-title').innerText = 'แนวโน้ม ' + title;
+
+            const targetVal = (targets[mFilter] && targets[mFilter][cFilter]) ? targets[mFilter][cFilter] : null;
+            document.getElementById('target-display').innerText = targetVal ? `Target: ${targetVal.toFixed(2)} %` : '';
+
+            let totalW = 0, totalC = 0;
+            const periods = {};
+
             wasteData.forEach(r => {
-                if ((!start || r.consDate >= start) && (!end || r.consDate <= end) && (cMFilter === 'all' || r.consMachine === cMFilter) && (r.consType && r.consType.toLowerCase().includes('cons'))) {
-                    if(!dailyData[r.consDate]) dailyData[r.consDate] = { w: 0, c: 0 };
-                    dailyData[r.consDate].c += r.cons;
+                if ((start && r.date < start) || (end && r.date > end)) return;
+                let p = r.date;
+                if (currentTimeGroup === 'week') p = getWeekNumber(r.date);
+                if (currentTimeGroup === 'month') p = r.date.substring(0, 7);
+                if (!periods[p]) periods[p] = { w: 0, c: 0 };
+                const matchWaste = (mFilter === 'all' || r.machine === mFilter) && (cFilter === 'all' || r.colC === cFilter) && (gFilter === 'all' || r.group === gFilter);
+                const matchCons = (cMFilter === 'all' || r.consMachine === cMFilter) && (r.consType && r.consType.includes('Cons'));
+                if (matchWaste) { periods[p].w += r.weight; totalW += r.weight; }
+                if (matchCons) { periods[p].c += r.cons; totalC += r.cons; }
+            });
+
+            document.getElementById('total-weight').innerText = totalW.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('total-con').innerText = totalC.toLocaleString(undefined, {minimumFractionDigits: 2});
+            document.getElementById('waste-percent').innerText = (totalC > 0 ? (totalW / totalC * 100).toFixed(2) : 0) + '%';
+
+            const sortedKeys = Object.keys(periods).sort();
+            const actuals = sortedKeys.map(k => periods[k].c > 0 ? (periods[k].w / periods[k].c * 100).toFixed(2) : 0);
+            const targetsData = targetVal ? sortedKeys.map(() => targetVal.toFixed(2)) : [];
+
+            if(trendChart) trendChart.destroy();
+            trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: sortedKeys, datasets: [{ label: 'Actual %', data: actuals, borderColor: '#3b82f6', backgroundColor: '#dbeafe', tension: 0.4, fill: true }, { label: 'Target', data: targetsData, borderColor: '#f87171', borderDash: [5, 5], fill: false }] },
+                options: { 
+                    responsive: true, 
+                    plugins: { 
+                        datalabels: { 
+                            anchor: 'end', 
+                            align: 'top', 
+                            formatter: (value, context) => context.dataset.label === 'Actual %' ? value + '%' : null,
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 10 }
+                        } 
+                    }, 
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } 
                 }
             });
-
-            const dates = Object.keys(dailyData).sort();
-            const pctVals = dates.map(d => dailyData[d].c > 0 ? ((dailyData[d].w / dailyData[d].c) * 100).toFixed(2) : 0);
-            const totW = Object.values(dailyData).reduce((a,b)=>a+b.w, 0), totC = Object.values(dailyData).reduce((a,b)=>a+b.c, 0);
-
-            document.getElementById('total-weight').innerText = totW.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('total-con').innerText = totC.toLocaleString(undefined, {minimumFractionDigits: 2});
-            document.getElementById('waste-percent').innerText = (totC > 0 ? (totW / totC * 100) : 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' %';
-            document.getElementById('table-waste').innerHTML = Object.entries(issueTotals).map(([i, w]) => `<tr><td class="py-2 border-b">${i}</td><td class="text-right py-2 border-b">${w.toLocaleString(undefined, {minimumFractionDigits: 2})}</td></tr>`).join('');
-            
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            if(trendChart) trendChart.destroy();
-            trendChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: 'Waste %', data: pctVals, borderColor: '#eab308', backgroundColor: '#fef9c3', fill: true }] }, options: { responsive: true, tension: 0.3, scales: { y: { beginAtZero: true, title: { display: true, text: '%' } } } } });
         }
         function resetFilters() { location.reload(); }
         fetchAllData();
