@@ -197,7 +197,7 @@
             trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
                 type: 'line',
                 data: { labels: sortedKeys, datasets: [{ label: 'Actual %', data: actuals, borderColor: '#4f46e5', backgroundColor: '#e0e7ff', tension: 0.4, fill: true }, { label: 'Target', data: targetsData, borderColor: '#ef4444', borderDash: [5, 5], fill: false, pointRadius: 0 }] },
-                options: { responsive: true, plugins: { datalabels: { display: (context) => context.dataset.label === 'Actual %', color: '#1e293b', anchor: 'end', align: 'top', formatter: (v) => v + '%', font: { weight: 'bold', size: 10 } } }, scales: { y: { beginAtZero: true } } }
+                options: { responsive: true, plugins: { datalabels: { display: (context) => context.dataset.label === 'Actual %', color: '#1e293b', anchor: 'end', align: 'top', formatter: (v) => v + '%', font: { weight: 'bold', size: 14 } } }, scales: { y: { beginAtZero: true } } }
             });
 
             const deptLabels = Object.keys(deptStats).filter(d => d !== 'undefined');
