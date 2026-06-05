@@ -199,29 +199,41 @@
             const targetsData = targetVal ? sortedKeys.map(() => targetVal.toFixed(2)) : [];
 
             if(trendChart) trendChart.destroy();
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, chartColor + 'CC');
-            gradient.addColorStop(1, chartColor + '00');
-
-            trendChart = new Chart(ctx, {
+            trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
                 type: 'line',
-                data: { 
-                    labels: sortedKeys, 
-                    datasets: [
-                        { label: 'Actual %', data: actuals, borderColor: chartColor, backgroundColor: gradient, tension: 0.4, fill: true, order: 1 }, 
-                        { label: 'Target (' + (targetVal ? targetVal.toFixed(2) : 'N/A') + '%)', data: targetsData, borderColor: '#ef4444', borderDash: [5, 5], fill: false, pointRadius: 0, order: 2 }
-                    ] 
-                },
+                data: { labels: sortedKeys, datasets: [{ label: 'Actual %', data: actuals, borderColor: document.getElementById('chart-color')?.value || '#4f46e5', backgroundColor: 'transparent', tension: 0.4, fill: true, order: 1 }, { label: 'Target', data: targetsData, borderColor: '#ef4444', borderDash: [5, 5], fill: false, pointRadius: 0, order: 2 }] },
                 options: { 
                     responsive: true, 
                     plugins: { 
-                        datalabels: { display: (context) => context.dataset.label === 'Actual %', color: '#1e293b', anchor: 'end', align: 'top', formatter: (v) => v + '%', font: { weight: 'bold', size: 14 } } 
+                        datalabels: { 
+                            display: (context) => context.dataset.label === 'Actual %',
+                            color: (context) => {
+                                const index = context.dataIndex;
+                                const actual = parseFloat(context.dataset.data[index]);
+                                const target = parseFloat(context.chart.data.datasets[1].data[index]);
+                                if (!isNaN(target) && actual > target) return '#ef4444'; // สีแดงหากสูงเกินเป้า
+                                return '#10b981'; // สีเขียวหากผ่านเกณฑ์
+                            },
+                            anchor: 'end', 
+                            align: 'top', 
+                            formatter: (v) => v + '%',
+                            font: { weight: 'bold', size: 14 } 
+                        } 
                     }, 
                     scales: { y: { beginAtZero: true } } 
                 }
             });
 
+            // สร้าง Gradient แบบนุ่มนวลตามสีที่เลือก
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            const baseColor = document.getElementById('chart-color')?.value || '#4f46e5';
+            gradient.addColorStop(0, baseColor + '40');
+            gradient.addColorStop(1, baseColor + '00');
+            trendChart.data.datasets[0].backgroundColor = gradient;
+            trendChart.update();
+
+            // Department Bar Chart (Waste kg)
             const deptLabels = Object.keys(deptStats).filter(d => d !== 'undefined');
             const deptWeights = deptLabels.map(dept => deptStats[dept].toFixed(2));
             
